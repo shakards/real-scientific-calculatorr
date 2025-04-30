@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SciCalc Pro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Color Variables */
+        :root {
+            --primary: #3498db;
+            --display-bg: #f8f9fa;
+            --btn-bg: #e9ecef;
+            --btn-hover: #dee2e6;
+            --operator: #fd7e14;
+            --operator-hover: #e8590c;
+            --equals: #28a745;
+            --equals-hover: #218838;
+            --clear: #dc3545;
+            --clear-hover: #c82333;
+            --text-dark: #212529;
+            --text-light: #f8f9fa;
+        }
+
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f1f3f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .calculator {
+            width: 340px;
+            background-color: var(--primary);
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Display Area */
+        .display {
+            background-color: var(--display-bg);
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: right;
+            min-height: 100px;
+        }
+
+        .history {
+            font-size: 1.1rem;
+            color: #6c757d;
+            margin-bottom: 10px;
+            min-height: 20px;
+        }
+
+        .current {
+            font-size: 2.2rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        /* Button Grid */
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px; /* Equal spacing in both directions */
+            margin-bottom: 15px;
+        }
+
+        /* Button Styles */
+        .btn {
+            border: none;
+            border-radius: 5px;
+            padding: 15px 0;
+            font-size: 1.2rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.2s;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Button Types */
+        .num-btn {
+            background-color: var(--btn-bg);
+            color: var(--text-dark);
+        }
+
+        .num-btn:hover {
+            background-color: var(--btn-hover);
+        }
+
+        .operator-btn {
+            background-color: var(--operator);
+            color: white;
+        }
+
+        .operator-btn:hover {
+            background-color: var(--operator-hover);
+        }
+
+        .equals-btn {
+            background-color: var(--equals);
+            color: white;
+            grid-row: span 2;
+        }
+
+        .equals-btn:hover {
+            background-color: var(--equals-hover);
+        }
+
+        .clear-btn {
+            background-color: var(--clear);
+            color: white;
+        }
+
+        .clear-btn:hover {
+            background-color: var(--clear-hover);
+        }
+
+        .func-btn {
+            background-color: #17a2b8;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .func-btn:hover {
+            background-color: #138496;
+        }
+
+        /* Footer Buttons */
+        .footer-buttons {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+        }
+
+        .memory-btn {
+            background-color: #6f42c1;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .memory-btn:hover {
+            background-color: #5a32a3;
+        }
+
+        .theme-btn {
+            background-color: var(--primary);
+            color: white;
+            border: 2px solid white;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <!-- Display -->
+        <div class="display">
+            <div class="history" id="history"></div>
+            <div class="current" id="current">0</div>
+        </div>
+
+        <!-- Scientific Buttons -->
+        <div class="button-grid scientific-buttons">
+            <button class="btn func-btn" onclick="calculate('sin(')">sin</button>
+            <button class="btn func-btn" onclick="calculate('cos(')">cos</button>
+            <button class="btn func-btn" onclick="calculate('tan(')">tan</button>
+            <button class="btn func-btn" onclick="calculate('^')">x^y</button>
+            <button class="btn func-btn" onclick="calculate('√(')">√</button>
+            
+            <button class="btn func-btn" onclick="calculate('asin(')">sin⁻¹</button>
+            <button class="btn func-btn" onclick="calculate('acos(')">cos⁻¹</button>
+            <button class="btn func-btn" onclick="calculate('atan(')">tan⁻¹</button>
+            <button class="btn func-btn" onclick="calculate('(')">(</button>
+            <button class="btn func-btn" onclick="calculate(')')">)</button>
+            
+            <button class="btn func-btn" onclick="calculate('log(')">log</button>
+            <button class="btn func-btn" onclick="calculate('ln(')">ln</button>
+            <button class="btn func-btn" onclick="calculate('e^(')">e^x</button>
+            <button class="btn func-btn" onclick="calculate('π')">π</button>
+            <button class="btn func-btn" onclick="calculate('e')">e</button>
+            
+            <button class="btn func-btn" onclick="calculate('10^(')">10^x</button>
+            <button class="btn func-btn" onclick="factorial()">x!</button>
+            <button class="btn func-btn" onclick="calculate('%')">%</button>
+            <button class="btn func-btn" onclick="calculate('1/')">1/x</button>
+            <button class="btn func-btn" onclick="calculate('abs(')">|x|</button>
+        </div>
+
+        <!-- Basic Buttons -->
+        <div class="button-grid basic-buttons">
+            <button class="btn num-btn" onclick="appendToDisplay('7')">7</button>
+            <button class="btn num-btn" onclick="appendToDisplay('8')">8</button>
+            <button class="btn num-btn" onclick="appendToDisplay('9')">9</button>
+            <button class="btn operator-btn" onclick="appendToDisplay('/')">÷</button>
+            <button class="btn clear-btn" onclick="clearDisplay()">C</button>
+            
+            <button class="btn num-btn" onclick="appendToDisplay('4')">4</button>
+            <button class="btn num-btn" onclick="appendToDisplay('5')">5</button>
+            <button class="btn num-btn" onclick="appendToDisplay('6')">6</button>
+            <button class="btn operator-btn" onclick="appendToDisplay('*')">×</button>
+            <button class="btn clear-btn" onclick="backspace()">⌫</button>
+            
+            <button class="btn num-btn" onclick="appendToDisplay('1')">1</button>
+            <button class="btn num-btn" onclick="appendToDisplay('2')">2</button>
+            <button class="btn num-btn" onclick="appendToDisplay('3')">3</button>
+            <button class="btn operator-btn" onclick="appendToDisplay('-')">-</button>
+            <button class="btn equals-btn" onclick="calculateResult()">=</button>
+            
+            <button class="btn num-btn" onclick="appendToDisplay('0')">0</button>
+            <button class="btn num-btn" onclick="appendToDisplay('.')">.</button>
+            <button class="btn num-btn" onclick="toggleSign()">±</button>
+            <button class="btn operator-btn" onclick="appendToDisplay('+')">+</button>
+        </div>
+
+        <!-- Footer Buttons -->
+        <div class="footer-buttons">
+            <button class="btn memory-btn" onclick="memoryRecall()">MR</button>
+            <button class="btn memory-btn" onclick="memoryClear()">MC</button>
+            <button class="btn memory-btn" onclick="memoryAdd()">M+</button>
+            <button class="btn memory-btn" onclick="memorySubtract()">M-</button>
+            <button class="btn theme-btn" onclick="toggleTheme()">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Calculator logic remains the same as previous versions
+        let currentInput = '0';
+        let history = '';
+        let memory = 0;
+
+        function updateDisplay() {
+            document.getElementById('current').textContent = currentInput;
+            document.getElementById('history').textContent = history;
+        }
+
+        function appendToDisplay(value) {
+            if (currentInput === '0' && value !== '.') {
+                currentInput = value;
+            } else {
+                currentInput += value;
+            }
+            updateDisplay();
+        }
+
+        function clearDisplay() {
+            currentInput = '0';
+            history = '';
+            updateDisplay();
+        }
+
+        function backspace() {
+            if (currentInput.length === 1) {
+                currentInput = '0';
+            } else {
+                currentInput = currentInput.slice(0, -1);
+            }
+            updateDisplay();
+        }
+
+        function toggleSign() {
+            currentInput = currentInput.startsWith('-') ? 
+                currentInput.substring(1) : '-' + currentInput;
+            updateDisplay();
+        }
+
+        function calculateResult() {
+            try {
+                let expr = currentInput
+                    .replace(/×/g, '*').replace(/÷/g, '/')
+                    .replace(/√\(/g, 'Math.sqrt(').replace(/\^/g, '**')
+                    .replace(/sin\(/g, 'Math.sin(').replace(/cos\(/g, 'Math.cos(')
+                    .replace(/tan\(/g, 'Math.tan(').replace(/π/g, 'Math.PI')
+                    .replace(/e\^\(/g, 'Math.exp(').replace(/10\^\(/g, '10**(')
+                    .replace(/abs\(/g, 'Math.abs(').replace(/1\//g, '1/');
+                
+                if (expr.includes('!')) {
+                    const num = parseFloat(expr.replace('!', ''));
+                    expr = factorial(num).toString();
+                }
+
+                history = currentInput + ' =';
+                currentInput = eval(expr).toString();
+                updateDisplay();
+            } catch {
+                currentInput = 'Error';
+                updateDisplay();
+                setTimeout(clearDisplay, 1500);
+            }
+        }
+
+        function calculate(value) {
+            if (value === '1/') {
+                history = '1/(' + currentInput + ')';
+                currentInput = (1 / parseFloat(currentInput)).toString();
+            } else {
+                currentInput += value;
+            }
+            updateDisplay();
+        }
+
+        function factorial() {
+            const num = parseFloat(currentInput);
+            if (num < 0) return 'Error';
+            let result = 1;
+            for (let i = 2; i <= num; i++) result *= i;
+            history = currentInput + '! =';
+            currentInput = result.toString();
+            updateDisplay();
+        }
+
+        // Memory functions
+        function memoryAdd() { memory += parseFloat(currentInput); }
+        function memorySubtract() { memory -= parseFloat(currentInput); }
+        function memoryRecall() { currentInput = memory.toString(); updateDisplay(); }
+        function memoryClear() { memory = 0; }
+
+        // Theme toggle
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const icon = document.querySelector('.theme-btn i');
+            icon.classList.toggle('fa-moon');
+            icon.classList.toggle('fa-sun');
+        }
+
+        // Keyboard support
+        document.addEventListener('keydown', (e) => {
+            const key = e.key;
+            if (/[0-9.]/.test(key)) appendToDisplay(key);
+            else if (/[+\-*/]/.test(key)) appendToDisplay(key);
+            else if (key === 'Enter' || key === '=') calculateResult();
+            else if (key === 'Escape') clearDisplay();
+            else if (key === 'Backspace') backspace();
+            else if (key === '(' || key === ')') appendToDisplay(key);
+            else if (key === '^') calculate('^');
+            else if (key === '!') factorial();
+        });
+    </script>
+</body>
+</html>
